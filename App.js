@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import MovieListScreen from './MovieListScreen';
+import MovieListScreen from './src/screens/MovieListScreen';
 
 export default function App() {
   return (
