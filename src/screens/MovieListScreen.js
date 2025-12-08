@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import MovieItem from "../components/MovieItem";
 import { fetchMovies } from "../api/moviesApi";
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function MovieListScreen() {
+    const navigation = useNavigation();
 
     const [movies, setMovies] = useState([]);
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(true);
-
+    
     useEffect(() => {
         loadMovies();
     }, []);
@@ -50,13 +52,12 @@ export default function MovieListScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Movies</Text>
             <FlatList 
                 data={movies} 
                 keyExtractor={(item) => item.id} 
                 contentContainerStyle={{paddingVertical: 8 }}
                 renderItem={({item}) => (
-                    <MovieItem movie={item} isFavorite={false} onPress={() => {}}/>
+                    <MovieItem movie={item} isFavorite={false} onPress={() => navigation.navigate('MovieDetails', { movie: item })}/>
                 )}
             />
         </View>
