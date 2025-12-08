@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import MovieItem from "../components/MovieItem";
 import { fetchMovies } from "../api/moviesApi";
 
@@ -8,7 +8,7 @@ export default function MovieListScreen() {
 
     const [movies, setMovies] = useState([]);
     const [errorMsg, setErrorMsg] = useState("");
-
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadMovies();
@@ -16,12 +16,16 @@ export default function MovieListScreen() {
 
     const loadMovies = async () => {
         try {
+            setErrorMsg("");
+            setLoading(true);
             const data = await fetchMovies();
             setMovies(data || []);
         } catch (e) {
             console.log(e);
             setErrorMsg("Error fetching movies");
-        } 
+        } finally {
+            setLoading(false);
+        }
     }
 
     if (errorMsg) {
@@ -35,6 +39,14 @@ export default function MovieListScreen() {
         );
     }
 
+    if (loading) {
+        return (
+            <View style={[styles.container, styles.center]}>
+                <ActivityIndicator size="large" color="#ffffff" />
+                <Text style={styles.text}>loading...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -70,7 +82,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     text: {
-        color: '#ff0000',
+        color: "#ffffff",
         fontSize: 16,
         marginTop: 8,
         marginBottom: 8
@@ -80,10 +92,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 8,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: "#2a2a2a",
     },
     tryAgainText: {
-        color: '#ffffff',
+        color: "#ff0000",
         fontSize: 14,
     },
 });
