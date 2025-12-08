@@ -1,40 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import MovieItem from "../components/MovieItem";
+import { fetchMovies } from "../api/moviesApi";
 
-const EXAMPLE_MOVIES = [
-    {
-        id: 1,
-        name: 'Spiderman',
-        stars: '4',
-        year: '2003',
-        category: 'action',
-        imageUrl: "",
-    },
-    {
-        id: 2,
-        name: 'Grown ups',
-        stars: '4.1',
-        year: '2012',
-        category: 'family',
-        imageUrl: "",
-    },
-    {
-        id: 3,
-        name: 'Antman',
-        stars: '3',
-        year: '2018',
-        category: 'action',
-        imageUrl: "",
-    },
-];
 
 export default function MovieListScreen() {
+
+    const [movies, setMovies] = useState([]);
+
+    useEffect(() => {
+        loadMovies();
+    }, []);
+
+    const loadMovies = async () => {
+        try {
+            const data = await fetchMovies();
+            setMovies(data || []);
+        } catch (e) {
+            console.log(e);
+        } 
+    }
+
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Movies</Text>
             <FlatList 
-                data={EXAMPLE_MOVIES} 
+                data={movies} 
                 keyExtractor={(item) => item.id} 
                 contentContainerStyle={{paddingVertical: 8 }}
                 renderItem={({item}) => (
