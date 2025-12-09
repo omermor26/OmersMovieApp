@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator }
 import MovieItem from "../components/MovieItem";
 import { fetchMovies } from "../api/moviesApi";
 import { useNavigation } from '@react-navigation/native';
+import SearchBar from "../components/SearchBar";
 
 
 export default function MovieListScreen() {
@@ -52,6 +53,7 @@ export default function MovieListScreen() {
 
     return (
         <View style={styles.container}>
+            <SearchBar value={""} onChangeText={() => {}} />
             <FlatList 
                 data={movies} 
                 keyExtractor={(item) => item.id} 
