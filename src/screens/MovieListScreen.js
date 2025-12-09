@@ -19,6 +19,7 @@ export default function MovieListScreen() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterType, setFilterType] = useState("ALL");
     const favoriteIds = useSelector(selectFavoriteIds);
+    const emptyMessage = "No movies to show";
 
     //first load of movies and favorites
     useEffect(() => {
@@ -94,16 +95,23 @@ export default function MovieListScreen() {
         <View style={styles.container}>
             <SearchBar value={searchTerm} onChangeText={setSearchTerm} />
             <FilterBar onAllPress={() => setFilterType("ALL")} onYearPress={() => setFilterType("BY_YEAR")} onFavoritePress={() => setFilterType("FAVORITES")}/>
-            <FlatList 
-                data={displayedMovies} 
-                keyExtractor={(item) => item.id} 
-                renderItem={({item}) => {
-                    const isFavorite = favoriteIds.includes(item.id);
-                    return (
-                        <MovieItem movie={item} isFavorite={isFavorite} onToggleFavorite={() => dispatch(toggleFavorite(item.id))} onPress={() => navigation.navigate('MovieDetails', { movie: item })}/>
-                    );
-                }}  
-            />
+
+            {displayedMovies.length === 0 ? (
+                <View style={styles.center}>
+                    <Text style={styles.text}>{emptyMessage}</Text>
+                </View>
+            ) : (
+                <FlatList 
+                    data={displayedMovies} 
+                    keyExtractor={(item) => item.id} 
+                    renderItem={({item}) => {
+                        const isFavorite = favoriteIds.includes(item.id);
+                        return (
+                            <MovieItem movie={item} isFavorite={isFavorite} onToggleFavorite={() => dispatch(toggleFavorite(item.id))} onPress={() => navigation.navigate('MovieDetails', { movie: item })}/>
+                        );
+                    }}  
+                />
+            )}
         </View>
     );
 }
