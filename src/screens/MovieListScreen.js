@@ -15,7 +15,7 @@ export default function MovieListScreen() {
     const [loading, setLoading] = useState(true);
     
     const [searchTerm, setSearchTerm] = useState("");
-    const [filter, setFilter] = useState(false);
+    const [filterType, setFilterType] = useState("ALL");
 
     useEffect(() => {
         loadMovies();
@@ -62,14 +62,18 @@ export default function MovieListScreen() {
         displayedMovies = displayedMovies.filter((movie) => movie.name.toLowerCase().includes(term));
     }
 
-    if (filter) {
+    if (filterType === "BY_YEAR") {
         displayedMovies = [...displayedMovies].sort((a,b) => Number(a.year) - Number(b.year));
+    }
+
+    if (filterType === "FAVORITES") {
+        
     }
 
     return (
         <View style={styles.container}>
             <SearchBar value={searchTerm} onChangeText={setSearchTerm} />
-            <FilterBar onSort={() => setFilter(true)}/>
+            <FilterBar onAllPress={() => setFilterType("ALL")} onYearPress={() => setFilterType("BY_YEAR")} onFavoritePress={() => setFilterType("FAVORITES")}/>
             <FlatList 
                 data={displayedMovies} 
                 keyExtractor={(item) => item.id} 
