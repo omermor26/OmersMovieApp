@@ -4,6 +4,7 @@ import MovieItem from "../components/MovieItem";
 import { fetchMovies } from "../api/moviesApi";
 import { useNavigation } from '@react-navigation/native';
 import SearchBar from "../components/SearchBar";
+import FilterBar from "../components/FilterBar";
 
 
 export default function MovieListScreen() {
@@ -14,6 +15,7 @@ export default function MovieListScreen() {
     const [loading, setLoading] = useState(true);
     
     const [searchTerm, setSearchTerm] = useState("");
+    const [filter, setFilter] = useState(false);
 
     useEffect(() => {
         loadMovies();
@@ -60,13 +62,17 @@ export default function MovieListScreen() {
         displayedMovies = displayedMovies.filter((movie) => movie.name.toLowerCase().includes(term));
     }
 
+    if (filter) {
+        displayedMovies = [...displayedMovies].sort((a,b) => Number(a.year) - Number(b.year));
+    }
+
     return (
         <View style={styles.container}>
             <SearchBar value={searchTerm} onChangeText={setSearchTerm} />
+            <FilterBar onSort={() => setFilter(true)}/>
             <FlatList 
                 data={displayedMovies} 
                 keyExtractor={(item) => item.id} 
-                contentContainerStyle={{paddingVertical: 8 }}
                 renderItem={({item}) => (
                     <MovieItem movie={item} isFavorite={false} onPress={() => navigation.navigate('MovieDetails', { movie: item })}/>
                 )}
@@ -79,14 +85,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#121212",
-    },
-    title: {
-        color: "#ffffff",
-        fontSize: 24,
-        fontWeight: 'bold',
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        marginBottom: 8,
     },
     center: {
         flex: 1,
