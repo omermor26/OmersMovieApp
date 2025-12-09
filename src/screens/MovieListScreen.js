@@ -5,22 +5,28 @@ import { fetchMovies } from "../api/moviesApi";
 import { useNavigation } from '@react-navigation/native';
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
-
+import { selectFavoriteIds, toggleFavorite, setFavorites } from "../data/favoritesManager";
+import { loadFavoritesFromStorage, saveFavoritesToStorage } from "../data/favoritesStorage";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function MovieListScreen() {
-    const navigation = useNavigation();
 
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
     const [movies, setMovies] = useState([]);
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(true);
-    
     const [searchTerm, setSearchTerm] = useState("");
     const [filterType, setFilterType] = useState("ALL");
+    const favoriteIds = useSelector(selectFavoriteIds);
 
+    //first load of movies and favorites
     useEffect(() => {
         loadMovies();
+        loadFavorites();
     }, []);
 
+    //fetching the movie details using the api
     const loadMovies = async () => {
         try {
             setErrorMsg("");
@@ -35,6 +41,17 @@ export default function MovieListScreen() {
         }
     }
 
+    //for loading latest favorites
+    const loadFavorites = async () => {
+        const stored = await loadFavoritesFromStorage();
+        dispatch(setFavorites(stored));
+    }
+
+    useEffect(() => {
+        saveFavoritesToStorage(favoriteIds);
+    }, [favoriteIds]);
+
+    //handling error
     if (errorMsg) {
         return (
             <View style={[styles.container, styles.center]}>
@@ -46,6 +63,7 @@ export default function MovieListScreen() {
         );
     }
 
+    //handling loading elements
     if (loading) {
         return (
             <View style={[styles.container, styles.center]}>
@@ -55,19 +73,21 @@ export default function MovieListScreen() {
         );
     }
 
+    //search logic
     const term = searchTerm.trim().toLowerCase();
     let displayedMovies = movies;
-
     if (term !== "") {
         displayedMovies = displayedMovies.filter((movie) => movie.name.toLowerCase().includes(term));
     }
 
+    //filtering by year
     if (filterType === "BY_YEAR") {
         displayedMovies = [...displayedMovies].sort((a,b) => Number(a.year) - Number(b.year));
     }
 
+    //filtering by favorites
     if (filterType === "FAVORITES") {
-        
+        displayedMovies = displayedMovies.filter((movie) => favoriteIds.includes(movie.id));
     }
 
     return (
@@ -77,9 +97,12 @@ export default function MovieListScreen() {
             <FlatList 
                 data={displayedMovies} 
                 keyExtractor={(item) => item.id} 
-                renderItem={({item}) => (
-                    <MovieItem movie={item} isFavorite={false} onPress={() => navigation.navigate('MovieDetails', { movie: item })}/>
-                )}
+                renderItem={({item}) => {
+                    const isFavorite = favoriteIds.includes(item.id);
+                    return (
+                        <MovieItem movie={item} isFavorite={isFavorite} onToggleFavorite={() => dispatch(toggleFavorite(item.id))} onPress={() => navigation.navigate('MovieDetails', { movie: item })}/>
+                    );
+                }}  
             />
         </View>
     );

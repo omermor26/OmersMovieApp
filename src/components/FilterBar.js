@@ -11,7 +11,7 @@ export default function FilterBar({onAllPress, onYearPress, onFavoritePress}) {
                 <Text style={styles.text}>By Year</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onFavoritePress}>
-                <Text style={styles.text}>Favorite</Text>
+                <Text style={styles.text}>Favorites</Text>
             </TouchableOpacity>
         </View>
     );

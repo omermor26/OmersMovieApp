@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-export default function MovieItem({ movie, isFavorite, onPress }) {
+export default function MovieItem({ movie, isFavorite, onPress, onToggleFavorite}) {
     return (
         <TouchableOpacity style={styles.container} onPress={onPress}>
             {movie.imageUrl ?  (
@@ -17,7 +17,7 @@ export default function MovieItem({ movie, isFavorite, onPress }) {
                 <Text style={styles.yearCategory}>{movie.year} | {movie.category}</Text>
                 <Text style={styles.stars}>⭐ {movie.stars}</Text>
             </View>
-            <TouchableOpacity onPress={""} style={styles.starContainer}>
+            <TouchableOpacity onPress={onToggleFavorite} style={styles.starContainer}>
                 <Text style={styles.star}>{isFavorite ? '★' : '☆'}</Text>
             </TouchableOpacity>
         </TouchableOpacity>

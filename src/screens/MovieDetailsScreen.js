@@ -1,17 +1,27 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { fetchMovieById } from '../api/moviesApi';
+import { useSelector, useDispatch } from "react-redux";
+import {selectFavoriteIds, toggleFavorite} from "../data/favoritesManager";
 
 export default function MovieDetailsScreen({route}) {
+
     const {movie} = route.params;
     const [movieDetails, setMovieDetails] = useState(movie);
     const [loadingDetails, setLoadingDetails] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
+    const dispatch = useDispatch();
+    const favoriteIds = useSelector(selectFavoriteIds);
+    const movieId = movieDetails.id;
+    const isFavorite = favoriteIds.includes(movieId);
+    
+    const desc = movieDetails.description && movieDetails.description.trim().length > 0 ? movieDetails.description : "No description";
 
+    //fetching the movie details using the api
     const loadDetails = async () => {
         try {
             setLoadingDetails(true);
-            setErrorMsg('');
+            setErrorMsg("");
             const data = await fetchMovieById(movie.id);
             setMovieDetails(data);
         } catch (err) {
@@ -22,12 +32,16 @@ export default function MovieDetailsScreen({route}) {
         }
     };
     
+    //loading full movie details when screen loads
     useEffect(() => {
         loadDetails();
     }, [movie.id]);
 
-    const desc = movieDetails.description && movieDetails.description.trim().length > 0 ? movieDetails.description : "No description";
-
+    //when pressing the favorites star
+    const onToggleFavorite = () => {
+        dispatch(toggleFavorite(movieId));
+    };
+    
     return (
         <ScrollView style={styles.container}>
             {movie.imageUrl ? (
@@ -43,6 +57,10 @@ export default function MovieDetailsScreen({route}) {
                     <Text style={styles.title}>{movieDetails.name}</Text>
                     <Text style={styles.yearCategory}> {movieDetails.year} | {movieDetails.category}</Text>
                 </View>
+
+                <TouchableOpacity style={styles.starContainer} onPress={onToggleFavorite}>
+                    <Text style={styles.star}>{isFavorite ? "★" : "☆"}</Text>
+                </TouchableOpacity>
             </View>
     
             <Text style={styles.rating}>Rating: {movieDetails.stars} ⭐</Text>
@@ -149,4 +167,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         fontWeight: 'bold',
     },
+    starContainer: {
+        paddingLeft: 12,
+    },
+    star: {
+        fontSize: 28,
+        color: "#ffd700",
+    }
 });
