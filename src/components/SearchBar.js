@@ -11,8 +11,8 @@ export default function SearchBar({value, onChangeText}) {
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 16,
-        paddingVertical: 8
+        paddingHorizontal: 15,
+        paddingTop: 14
     },
     input: {
         backgroundColor: "#2a2a2a",
@@ -20,6 +20,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         fontSize: 16,
         paddingHorizontal: 12,
-        paddingVertical: 8
+        paddingVertical: 9
     }
 })

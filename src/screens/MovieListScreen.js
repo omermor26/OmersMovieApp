@@ -13,6 +13,8 @@ export default function MovieListScreen() {
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(true);
     
+    const [searchTerm, setSearchTerm] = useState("");
+
     useEffect(() => {
         loadMovies();
     }, []);
@@ -51,11 +53,18 @@ export default function MovieListScreen() {
         );
     }
 
+    const term = searchTerm.trim().toLowerCase();
+    let displayedMovies = movies;
+
+    if (term !== "") {
+        displayedMovies = displayedMovies.filter((movie) => movie.name.toLowerCase().includes(term));
+    }
+
     return (
         <View style={styles.container}>
-            <SearchBar value={""} onChangeText={() => {}} />
+            <SearchBar value={searchTerm} onChangeText={setSearchTerm} />
             <FlatList 
-                data={movies} 
+                data={displayedMovies} 
                 keyExtractor={(item) => item.id} 
                 contentContainerStyle={{paddingVertical: 8 }}
                 renderItem={({item}) => (
